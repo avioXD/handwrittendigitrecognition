@@ -1,0 +1,56 @@
+.wrapper {
+  display: inline-flex;
+  justify-content: flex-end;
+  border: 2px solid lighten(#0043be, 15%);
+  transition: border-color 0.2s ease-in;
+}
+.wrapper-correct {
+  border: 2px solid lighten(#44ef00, 15%) !important;
+  box-shadow: 1px 1px 10px #44ef00;
+  transition: all 0.2s ease-in;
+}
+
+.wrapper :hover {
+  box-shadow: 1px 1px 10px rgb(170, 170, 170);
+  transition: box-shadow 0.2s ease-in;
+}
+.wrapper-error {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  perspective: 1000px;
+  transition: all 0.2s ease-in;
+  box-shadow: 0px 0px 20px rgba(255, 0, 0, 0.925);
+  &:hover {
+    box-shadow: 0px 0px 20px rgba(255, 0, 0, 0.925);
+  }
+}
+canvas {
+  cursor: crosshair;
+}
+
+.row {
+  margin: 5vh 0vw;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}

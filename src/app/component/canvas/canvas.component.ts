@@ -1,39 +1,93 @@
 import {
   Component,
   Input,
-  ElementRef,
-  AfterViewInit,
   ViewChild,
   OnInit,
+  Output,
+  EventEmitter,
+  AfterViewInit,
+  OnChanges,
 } from '@angular/core';
-import { fromEvent } from 'rxjs';
-import { switchMap, takeUntil, pairwise } from 'rxjs/operators';
 import { DrawableDirective } from './drawable.directive';
 import * as tf from '@tensorflow/tfjs';
+const numberModels = '../../../assets/numericTrainedSet/model.json';
+const characterModel = '../../../assets/charTrainingSet/model.json';
+const numberArr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const characterArr = [
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'O',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+  'Z',
+];
 @Component({
   selector: 'app-canvas',
   templateUrl: './canvas.component.html',
-  styleUrls: ['./canvas.component.css'],
+  styleUrls: ['./canvas.component.scss'],
 })
-export class CanvasComponent implements OnInit {
+export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   // a reference to the canvas element from our template
+  @Input() character;
+  @Output() predictedCharEvent = new EventEmitter<any>();
   linearModel: tf.Sequential;
   prediction: any;
-  predictedNumber: string;
-
+  predictedChar: string;
+  predictError: boolean = false;
   model: tf.LayersModel;
   predictions: any;
-
+  predictionCorrect: boolean = false;
+  arr: any[] = [];
+  chartype: string = 'none';
   @ViewChild(DrawableDirective) canvas;
-
-  ngOnInit() {
-    this.loadModel();
+  ngOnChanges() {
+    if (isNaN(this.character)) {
+      this.loadModel(characterModel);
+      this.arr = characterArr;
+      this.chartype = 'Character';
+    } else {
+      this.loadModel(numberModels);
+      this.arr = numberArr;
+      this.chartype = 'Number';
+    }
   }
+  ngOnInit() {
+    if (isNaN(this.character)) {
+      this.loadModel(characterModel);
+      this.arr = characterArr;
+      this.chartype = 'Character';
+    } else {
+      this.loadModel(numberModels);
+      this.arr = numberArr;
+      this.chartype = 'Number';
+    }
+  }
+  ngAfterViewInit(): void {}
 
   //// LOAD PRETRAINED KERAS MODEL ////
 
-  async loadModel() {
-    this.model = await tf.loadLayersModel('../../../assets/model.json');
+  async loadModel(modelType) {
+    this.model = await tf.loadLayersModel(modelType);
   }
 
   async predict(imageData: ImageData) {
@@ -45,59 +99,43 @@ export class CanvasComponent implements OnInit {
 
       // Make and format the predications
       const output = this.model.predict(img) as any;
-
       // Save predictions on the component
       this.predictions = Array.from(output.dataSync());
-      const arr = [
-        '0',
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        'A',
-        'B',
-        'C',
-        'D',
-        'E',
-        'F',
-        'G',
-        'H',
-        'I',
-        'J',
-        'K',
-        'L',
-        'M',
-        'N',
-        'O',
-        'P',
-        'Q',
-        'R',
-        'S',
-        'T',
-        'U',
-        'V',
-        'W',
-        'X',
-        'Y',
-        'Z',
-      ];
       for (let i = 0; i < this.predictions.length; i++) {
         if (this.predictions[i] == '1') {
-          this.predictedNumber = arr[i];
+          this.predictedChar = this.arr[i];
+          if (this.character == this.predictedChar) {
+            this.onCorrect();
+          } else this.onError();
         }
       }
-      if (this.predictedNumber == '') {
-        this.predictedNumber = ':(';
+      if (this.predictedChar == '') {
+        this.onError();
       }
     });
   }
 
   clear() {
-    this.predictedNumber = '';
+    this.predictedChar = '';
+    this.canvas.clear();
+    this.predictError = false;
+    this.predictionCorrect = false;
+  }
+  onCorrect() {
+    this.predictionCorrect = true;
+    this.predictError = false;
+    setTimeout(() => {
+      this.clear();
+      this.predictionCorrect = false;
+      this.predictedCharEvent.emit(true);
+    }, 2000);
+  }
+  onError() {
+    this.predictError = true;
+    setTimeout(() => {
+      this.clear();
+      this.predictError = false;
+      this.predictedCharEvent.emit(false);
+    }, 3000);
   }
 }

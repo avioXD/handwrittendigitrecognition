@@ -1,7 +1,6 @@
 import {
   Directive,
   HostListener,
-  HostBinding,
   ElementRef,
   Output,
   EventEmitter,
@@ -50,7 +49,7 @@ export class DrawableDirective implements OnInit {
 
     this.ctx.beginPath(); // begin
 
-    this.ctx.lineWidth = 25;
+    this.ctx.lineWidth = 28;
     this.ctx.lineCap = 'round';
     this.ctx.strokeStyle = '#111111';
 
