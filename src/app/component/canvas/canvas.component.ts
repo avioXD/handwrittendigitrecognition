@@ -136,6 +136,6 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       this.clear();
       this.predictError = false;
       this.predictedCharEvent.emit(false);
-    }, 3000);
+    }, 4000);
   }
 }
