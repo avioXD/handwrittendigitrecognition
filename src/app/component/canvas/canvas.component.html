@@ -11,7 +11,7 @@
         <p class="text-primary">You Have Drawn "{{predictedChar}}" </p>
     </div>
     <div class="wrapper" [ngClass]="{  'wrapper-error': predictError, 'wrapper-correct': predictionCorrect} ">
-        <canvas #canva drawable (newImage)="predict($event)"></canvas><br>
+        <canvas #canvas drawable (newImage)="predict($event)"></canvas><br>
     </div>
 
 </div>

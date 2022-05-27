@@ -19,6 +19,10 @@ export class HomeComponent implements OnInit {
   charIterator: number = 0;
   success: boolean = false;
   ngOnInit(): void {
+    this.setCaptcha();
+  }
+
+  setCaptcha() {
     this.charIterator = 0;
     this._api.createCaptcha().subscribe((res: any) => {
       console.log(res);
